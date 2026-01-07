@@ -128,13 +128,10 @@ fi
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
-if [ $phpversion != "none" ]
-then
-    ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
+ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
 
-    # Create a dedicatedPHP-FPM config
-    ynh_add_fpm_config
-fi
+# Create a dedicatedPHP-FPM config
+ynh_add_fpm_config
 
 ynh_composer_install
 
