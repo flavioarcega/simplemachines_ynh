@@ -41,22 +41,17 @@ chown -R $app:www-data "$install_dir"
 #=================================================
 # CREATE DATABASE
 #=================================================
-if [ $database != "none" ]; then
-    ynh_script_progression --message="Creating a database..." --weight=2
+ynh_script_progression --message="Creating a database..." --weight=2
 
-    db_name=$(ynh_sanitize_dbid --db_name=$app)
-    db_user=$db_name
-    db_pwd=$(ynh_string_random --length=30)
-    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-    ynh_app_setting_set --app=$app --key=db_user --value=$db_user
-    ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
+db_name=$(ynh_sanitize_dbid --db_name=$app)
+db_user=$db_name
+db_pwd=$(ynh_string_random --length=30)
 
-    if [ $database == "mysql" ]; then
-        ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
-    elif [ $database == "postgresql" ]; then
-        ynh_psql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
-    fi
-fi
+ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+ynh_app_setting_set --app=$app --key=db_user --value=$db_user
+ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
+
+ynh_psql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
 
 #=================================================
 # NGINX CONFIGURATION
@@ -67,11 +62,8 @@ nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 mkdir -p "$nginx_extra_conf_dir"
 
 # Prepare nginx extra conf
-if [ $phpversion != "none" ]
-then
-    ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-    YNH_PHP_VERSION="$phpversion"
-fi
+ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+YNH_PHP_VERSION="$phpversion"
 
 if [ $custom_error_file -eq 1 ]
 then
@@ -131,7 +123,8 @@ fi
 ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
 
 # Create a dedicatedPHP-FPM config
-ynh_add_fpm_config
+#ynh_add_fpm_config
+ynh_config_add_phpfpm
 
 ynh_composer_install
 
