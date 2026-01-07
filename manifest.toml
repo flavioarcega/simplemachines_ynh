@@ -42,7 +42,6 @@ ram.runtime = "50M"
 
     [install.database]
     ask.en = "Do you need a database?"
-    ask.fr = "Avez-vous besoin d'une base de données ?"
     type = "select"
     choices = [ "none", "mysql", "postgresql" ]
     default = "postgres"
@@ -60,6 +59,7 @@ ram.runtime = "50M"
 
         [resources.sources.main]
         url = "https://github.com/SimpleMachines/SMF/archive/refs/tags/v2.1.6.tar.gz"
+        sha256 = "329037e8d3a04721732f2df2fe4eb12e6300c0aef2e0639e92bac56856120d11"
         autoupdate.upstream = "https://github.com/SimpleMachines/SMF"
         autoupdate.strategy = "latest_github_tag"
 
