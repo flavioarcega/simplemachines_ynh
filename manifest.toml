@@ -13,6 +13,7 @@ license = "GPL-3.0-only"
 
 [integration]
 yunohost = ">= 11.2.4"
+helpers_version = "2.1"
 architectures = "all"
 multi_instance = true
 ldap = true
@@ -33,12 +34,6 @@ ram.runtime = "50M"
     type = "group"
     default = "visitors"
 
-    [install.custom_error_file]
-    ask.en = "Activate the custom error file use"
-    type = "boolean"
-    default = false
-    help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www/error`."
-
 [resources]
 
     [resources.sources]
@@ -58,7 +53,10 @@ ram.runtime = "50M"
     main.url = "/"
 
     [resources.apt]
-    packages = "nginx postgresql postgresql-contrib php8.4-pgsql php8.4-ldap"
+    packages = "nginx postgresql postgresql-contrib php7.4-pgsql php7.4-curl php7.4-ldap php7.4-mbstring"
 
     [resources.composer]
     version = "2.9.3"
+
+    [resources.database]
+    type = "postgresql"

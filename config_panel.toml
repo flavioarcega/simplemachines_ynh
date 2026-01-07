@@ -2,12 +2,3 @@ version = "1.0"
 
 [main]
 name.en = "Simple Machines Configuration"
-
-    [main.code_error]
-    name.en = "HTML Custom error"
-
-        [main.code_error.custom_error_file]
-        ask.en = "Activate the custom error file use"
-        type = "boolean"
-        default = false
-        help.en = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www\\error`."
