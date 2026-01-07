@@ -5,14 +5,12 @@
 #=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
-
 app_nb=$YNH_APP_INSTANCE_NUMBER
 ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 
@@ -26,14 +24,23 @@ ynh_script_progression --message="Validating installation parameters..." --weigh
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_script_progression --message="Storing installation settings..." --weight=1
-
-ynh_app_setting_set --app=$app --key=password --value=$password
+#ynh_script_progression --message="Storing installation settings..." --weight=1
+#ynh_app_setting_set --app=$app --key=password --value=$password
 
 #=================================================
-# CREATE A MYSQL DATABASE
+# DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression "Setting up source files..."
 
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source --dest_dir="$install_dir" --source_id="simplemachine"
+
+chmod -R o-rwx "$install_dir"
+chown -R $app:www-data "$install_dir"
+
+#=================================================
+# CREATE DATABASE
+#=================================================
 if [ $database != "none" ]; then
     ynh_script_progression --message="Creating a database..." --weight=2
 
@@ -72,7 +79,6 @@ then
     ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
 fi
 
-
 # Create a dedicated NGINX config
 ynh_add_nginx_config
 ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
@@ -102,28 +108,26 @@ fi
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
+#mkdir -p "$install_dir/www"
+#
+#if [ $with_sftp -eq 1 ]
+#then
+#    ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
+#else
+#    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+#fi
 
-mkdir -p "$install_dir/www"
-
-if [ $with_sftp -eq 1 ]
-then
-    ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
-else
-    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
-fi
-
-chown -R $app:www-data "$install_dir"
+#chown -R $app:www-data "$install_dir"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
-chown root:root "$install_dir"
-setfacl -m g:$app:r-x "$install_dir"
-setfacl -m g:www-data:r-x "$install_dir"
-chmod 750 "$install_dir"
+#chown root:root "$install_dir"
+#setfacl -m g:$app:r-x "$install_dir"
+#setfacl -m g:www-data:r-x "$install_dir"
+#chmod 750 "$install_dir"
 
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
-
 if [ $phpversion != "none" ]
 then
     ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
@@ -132,8 +136,13 @@ then
     ynh_add_fpm_config
 fi
 
+ynh_composer_install
+
+ynh_composer_exec install
+
+ynh_composer_exec update
+
 #=================================================
 # END OF SCRIPT
 #=================================================
-
 ynh_script_progression --message="Installation of $app completed" --last
