@@ -63,7 +63,7 @@ mkdir -p "$nginx_extra_conf_dir"
 
 # Prepare nginx extra conf
 ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-YNH_PHP_VERSION="$phpversion"
+#YNH_PHP_VERSION="$phpversion"
 
 if [ $custom_error_file -eq 1 ]
 then

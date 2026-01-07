@@ -27,7 +27,7 @@ ram.runtime = "50M"
 
     [install.path]
     type = "path"
-    default = "/site"
+    default = "/"
 
     [install.init_main_permission]
     type = "group"
@@ -35,7 +35,6 @@ ram.runtime = "50M"
 
     [install.custom_error_file]
     ask.en = "Activate the custom error file use"
-    ask.fr = "Activer l'utilisation du fichier d'erreur personnalisé"
     type = "boolean"
     default = false
     help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www/error`."
@@ -59,7 +58,7 @@ ram.runtime = "50M"
     main.url = "/"
 
     [resources.apt]
-    packages = "nginx postgresql postgresql-contrib php8.4-pgsql"  # Kind of "dummy" value to be sure to have a non-empty dep list
+    packages = "nginx postgresql postgresql-contrib php8.4-pgsql php8.4-ldap"
 
     [resources.composer]
     version = "2.9.3"
